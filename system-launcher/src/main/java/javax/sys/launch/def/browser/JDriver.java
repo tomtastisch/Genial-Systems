@@ -26,7 +26,6 @@ import java.lang.reflect.InvocationTargetException;
         //create protocol handshake
         WebDriverManager manage = WebDriverManager.getInstance(DriverManagerType.valueOf(browserName));
         manage.setup();
-        manage.setup();
         //create driver instance
         return (WebDriver) ((java.lang.reflect.Constructor<?>)
                 Class.forName(manage.getDriverManagerType().browserClass()).getConstructor())
