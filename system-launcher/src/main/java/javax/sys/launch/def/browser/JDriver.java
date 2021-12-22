@@ -14,11 +14,8 @@ import java.lang.reflect.InvocationTargetException;
     private static WebDriver DRIVER;
 
     public static @Nullable WebDriver systemExplorer() {
-        try {
-            return new JDriver(Sniffer.systemBrowserName()).createDriverInstance();
-        } catch (Exception e) {
-            return null;
-        }
+        try {return new JDriver(Sniffer.systemBrowserName()).createDriverInstance();}
+        catch (Exception e) {return null;}
     }
 
     @NotNull WebDriver createDriverInstance() throws ClassNotFoundException, NoSuchMethodException,
