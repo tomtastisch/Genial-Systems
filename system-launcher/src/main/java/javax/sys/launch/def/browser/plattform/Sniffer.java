@@ -12,6 +12,12 @@ import java.util.stream.Collectors;
 
 public record Sniffer(OS os, String[] regex) {
 
+    public static @NotNull DriverInstance systemBrowser() {
+        return Objects.requireNonNull(Arrays.stream(DriverInstance.values())
+                .filter(driver -> driver.name().equals(systemBrowserName()))
+                .findFirst().orElse(null));
+    }
+
     public static @NotNull String systemBrowserName() {
         return Objects.requireNonNull(Arrays.stream(OS.values())
                 .filter(os -> System.getProperty("os.name").toLowerCase().contains(os.name().toLowerCase()))
@@ -24,7 +30,7 @@ public record Sniffer(OS os, String[] regex) {
                     new BufferedReader(new InputStreamReader(new ProcessBuilder(regex)
                             .start().getInputStream())).lines()
                             .filter(Objects::nonNull)
-                            .map(e -> Arrays.stream(Driver.values())
+                            .map(e -> Arrays.stream(DriverInstance.values())
                                     .filter(driver -> e.matches("(.*)" + driver.get().regex() + "(.*)"))
                                     .map(Enum::name)
                                     .findFirst().orElse("")

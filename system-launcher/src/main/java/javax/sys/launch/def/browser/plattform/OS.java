@@ -1,6 +1,6 @@
 package javax.sys.launch.def.browser.plattform;
 
-public enum OS {
+enum OS {
 
     WIN(ProcessBuilderProperty.WINDOWS),
     UNIX(ProcessBuilderProperty.UNIX),
@@ -17,7 +17,7 @@ public enum OS {
                 "\"HKEY_CURRENT_USER\\Software\\Microsoft\\Windows\\Shell\\Associations\\UrlAssociations\\http\\UserChoice\"",
                 "/v", "ProgId"};
 
-        String[] UNIX = {"bash", "-c", "???"};
+        @Deprecated String[] UNIX = {"bash", "-c", "???"};
         String[] LINUX = {"bash", "-c", "xdg-settings", "get", "default-web-browser"};
     }
 }
