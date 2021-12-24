@@ -19,5 +19,5 @@ interface ProcessBuilderProperty {
             "/v", "ProgId"};
 
     String[] UNIX = {"bash", "-c", "???"};
-    String[] LINUX = {"bash", "-c", "???"};
+    String[] LINUX = {"bash", "-c", "xdg-settings", "get", "default-web-browser"};
 }
