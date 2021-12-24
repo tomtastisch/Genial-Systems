@@ -20,11 +20,11 @@ enum Driver {
     public @org.jetbrains.annotations.NotNull JBrowser get() {
         return this.browser;
     }
-}
 
-/**
- * Template class for System-driver-constant
- */
-record JBrowser(String regex, String processCall) {
-    //None content...
+    /**
+     * Template class for System-driver-constant
+     */
+    record JBrowser(String regex, String processCall) {
+        //None content...
+    }
 }

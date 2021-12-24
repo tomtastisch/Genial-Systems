@@ -19,14 +19,7 @@ public record Sniffer(OS os, String[] regex) {
     }
 
     public @NotNull String name() {
-        try {
-
-            new BufferedReader(new InputStreamReader(new ProcessBuilder(regex)
-                    .start().getInputStream())).lines()
-                    .filter(Objects::nonNull)
-                    .forEach(System.out::println);
-
-            // registration where we find the default browser
+        try {// registration where we find the default browser
             return StringUtils.join(
                     new BufferedReader(new InputStreamReader(new ProcessBuilder(regex)
                             .start().getInputStream())).lines()

@@ -11,13 +11,13 @@ public enum OS {
     OS(String... regex) {
         this.browser = new Sniffer(this, regex);
     }
-}
 
-interface ProcessBuilderProperty {
-    String[] WINDOWS = {"cmd", "/c", "reg", "query",
-            "\"HKEY_CURRENT_USER\\Software\\Microsoft\\Windows\\Shell\\Associations\\UrlAssociations\\http\\UserChoice\"",
-            "/v", "ProgId"};
+    private interface ProcessBuilderProperty {
+        String[] WINDOWS = {"cmd", "/c", "reg", "query",
+                "\"HKEY_CURRENT_USER\\Software\\Microsoft\\Windows\\Shell\\Associations\\UrlAssociations\\http\\UserChoice\"",
+                "/v", "ProgId"};
 
-    String[] UNIX = {"bash", "-c", "???"};
-    String[] LINUX = {"bash", "-c", "xdg-settings", "get", "default-web-browser"};
+        String[] UNIX = {"bash", "-c", "???"};
+        String[] LINUX = {"bash", "-c", "xdg-settings", "get", "default-web-browser"};
+    }
 }
