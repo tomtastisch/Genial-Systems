@@ -2,6 +2,7 @@ package javax.sys.launch.def.browser.plattform;
 
 import org.apache.commons.lang.StringUtils;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import javax.annotation.processing.SupportedSourceVersion;
 import javax.lang.model.SourceVersion;
@@ -13,9 +14,11 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 
 /**
- *
+ * Sniffer class to determine the required information
+ * about the system and individual default setting requirements
  */
-@SupportedSourceVersion(SourceVersion.RELEASE_17)  public record Sniffer(OS os, String[] regex) {
+@SupportedSourceVersion(SourceVersion.RELEASE_17)
+public @NotNull record Sniffer(@NotNull OS os, @NotNull String[] regex) {
     /**
      *
      * @return
@@ -32,7 +35,7 @@ import java.util.stream.Collectors;
      * help of {@link String#toLowerCase() lower case}
      * @return name of the System-default-browser
      */
-    public static @NotNull String systemBrowserName() {
+    public static @Nullable String systemBrowserName() {
         return Objects.requireNonNull(Arrays.stream(OS.values())
                 .filter(os -> System.getProperty("os.name")
                         /* Equals the name of the system-property return with the name of value
@@ -45,7 +48,7 @@ import java.util.stream.Collectors;
      *
      * @return
      */
-    public @NotNull String name() {
+    public @Nullable String name() {
         try {// registration where we find the default browser
             return StringUtils.join(
                     new BufferedReader(new InputStreamReader(new ProcessBuilder(regex)
