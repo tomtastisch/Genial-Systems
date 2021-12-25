@@ -80,6 +80,10 @@
                         </goals>
                     </execution>
                 </executions>
+                <configuration>
+                    <source>${mvc.source}</source>
+                    <target>${mvc.target}</target>
+                </configuration>
             </plugin>
         </plugins>
     </build>
