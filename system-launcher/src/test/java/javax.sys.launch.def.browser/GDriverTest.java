@@ -10,7 +10,7 @@ public class GDriverTest {
         try (SystemExplorer wdi = GDriverFactory.systemExplorer()) {
             wdi.createDriverInstance();
         } catch(Exception e) {
-            System.err.println(e);
+            e.printStackTrace();
         }
         //check if is the instance not null
         //Assert.notNull(Objects.requireNonNull(driver), "j-driver-test-failed");

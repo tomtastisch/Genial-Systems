@@ -79,10 +79,8 @@ public @NotNull record GDriverFactory(@NotNull DriverInstance instance, @NotNull
     @Override public void close() throws Exception {
         LOGGER.info("destroy web-driver instance and clean with gc.");
         queue.get(id).quit();
-
         LOGGER.info("delete downloaded files from " + pth);
         if (Objects.nonNull(pth)) pth.toFile().deleteOnExit();
-
     }
 }
 
