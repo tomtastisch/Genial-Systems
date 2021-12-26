@@ -1,6 +1,5 @@
 package javax.sys.launch.def.browser;
 
-import net.jodah.failsafe.internal.util.Assert;
 import org.junit.jupiter.api.Test;
 import org.openqa.selenium.WebDriver;
 
