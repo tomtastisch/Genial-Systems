@@ -38,8 +38,8 @@ public @NotNull record Sniffer(@NotNull OS os, @NotNull String[] regex) {
     public static @Nullable String systemBrowserName() {
         return Objects.requireNonNull(Arrays.stream(OS.values())
                 .filter(os -> System.getProperty("os.name")
-                        /* Equals the name of the system-property return with the name of value
-                         * os-value name.*/
+                        /* Equals the name of the system-property return
+                         * with the name of value os-value name.*/
                         .toLowerCase().contains(os.name().toLowerCase()))
                 .findFirst().orElse(null)).browser.name();
     }
