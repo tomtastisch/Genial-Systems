@@ -68,8 +68,10 @@ public @NotNull record GDriverFactory(@NotNull DriverInstance instance, @NotNull
             WebDriver driver = (WebDriver) ((java.lang.reflect.Constructor<?>)
                     Class.forName(manage.getDriverManagerType().browserClass()).getConstructor())
                     .newInstance();
+
             /* Add the created driver into the queue. */
             queue.put(id, driver);
+            LOGGER.info(driver + " is created and was admitted to the queue.");
             return driver;
         } catch (Exception e) {
             LOGGER.error(String.valueOf(e.fillInStackTrace()));
