@@ -14,7 +14,7 @@
     </modules>
 
     <properties>
-        <mvc.source>11</mvc.source>
+        <mvc.source>17</mvc.source>
         <mvc.target>${mvc.source}</mvc.target>
 
         <!-- https://mvnrepository.com/artifact/org.apache.maven.plugins/maven-compiler-plugin -->
