@@ -37,7 +37,7 @@ import java.util.UUID;
  * the specified Selenium Driver, do without preparations to meet.
  */
 @SupportedSourceVersion(SourceVersion.RELEASE_17)
-public @NotNull record GDriverFactory(@NotNull DriverInstance instance, @NotNull String id)
+public @NotNull record GDriverFactory(@NotNull DriverInstance instance, @NotNull String id, boolean autoClose)
         implements SystemExplorer {
 
     private static final Map<String, WebDriver> queue = new TreeMap<>();
@@ -45,7 +45,6 @@ public @NotNull record GDriverFactory(@NotNull DriverInstance instance, @NotNull
 
     /**
      * Analyzes the OS and its default web browser to play this as a stable class.
-     *
      * @return standard selenium driver, which has been
      * stored in the system settings of the OS
      */
@@ -53,7 +52,7 @@ public @NotNull record GDriverFactory(@NotNull DriverInstance instance, @NotNull
         LOGGER.info("start of creation and run a instance of the default web-driver");
         /* Creates a new DriverFactory instance with the system default
          * web-driver as parameter. */
-        return new GDriverFactory(Sniffer.systemBrowser(), UUID.randomUUID().toString());
+        return new GDriverFactory(Sniffer.systemBrowser(), UUID.randomUUID().toString(), true);
     }
 
     @Override public WebDriver createDriverInstance() {
@@ -66,21 +65,26 @@ public @NotNull record GDriverFactory(@NotNull DriverInstance instance, @NotNull
             pth = Paths.get(manage.getDownloadedDriverPath());
 
             LOGGER.info("creates a instance of the default web-driver and performs this using the installed features");
-            return queue.put(id, (WebDriver) ((java.lang.reflect.Constructor<?>)
+            WebDriver driver = (WebDriver) ((java.lang.reflect.Constructor<?>)
                     Class.forName(manage.getDriverManagerType().browserClass()).getConstructor())
-                    .newInstance());
-
+                    .newInstance();
+            /* Add the created driver into the queue. */
+            queue.put(id, driver);
+            return driver;
         } catch (Exception e) {
             LOGGER.error(String.valueOf(e.fillInStackTrace()));
             return null;
         }
     }
 
-    @Override public void close() throws Exception {
-        LOGGER.info("destroy web-driver instance and clean with gc.");
-        queue.get(id).quit();
-        LOGGER.info("delete downloaded files from " + pth);
-        if (Objects.nonNull(pth)) pth.toFile().deleteOnExit();
+    @Override public void close() {
+        if(Objects.nonNull(queue.get(id)) && autoClose) {
+            LOGGER.info("destroy web-driver instance and clean with gc.");
+            queue.get(id).quit();
+            LOGGER.info("delete downloaded files from " + pth);
+            if (Objects.nonNull(pth))
+                pth.toFile().deleteOnExit();
+        }
     }
 }
 

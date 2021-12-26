@@ -13,18 +13,12 @@ import org.slf4j.LoggerFactory;
  * realization of user information management.
  */
 public interface SystemExplorer extends AutoCloseable {
-    /**
-     * Logger is provided to the realization of user information management
-     */
+    /** Logger is provided to the realization of user information management. */
     Logger LOGGER = LoggerFactory.getLogger(SystemExplorer.class);
-    /**
-     * Temporary folder fot save downloaded files
-     */
+    /** Temporary folder fot save downloaded files. */
     String tmpPath = FileUtils.getTempDirectoryPath();
-
     /**
      * Creates a web-driver instance of the default browser of the current OS.
-     *
      * @return a web-driver instance of the system default driver
      */
     @Nullable WebDriver createDriverInstance() throws Exception;
