@@ -78,7 +78,8 @@ public @NotNull record GDriverFactory(@NotNull DriverInstance instance, long id,
     @Override public void close() {
         queue.get(id).stream().forEach(element -> {
             if(element instanceof WebDriver) {
-                LOGGER.info("destroy [" + element + "] instance and clean with gc.");
+                LOGGER.info("destroy " + element.toString().replace(':', '[')
+                        + "] instance and clean with gc.");
                 ((WebDriver) element).quit();
             } else {
                 LOGGER.info("delete downloaded files from [" + element + "]");
