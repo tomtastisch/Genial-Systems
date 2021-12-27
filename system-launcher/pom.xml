@@ -17,6 +17,7 @@
 
         <slf4j.version>2.0.0-alpha5</slf4j.version>
         <kotlin.version>1.6.10</kotlin.version>
+        <google.quava.version>31.0.1-jre</google.quava.version>
     </properties>
 
     <dependencies>
@@ -41,6 +42,13 @@
             <artifactId>annotations</artifactId>
             <version>RELEASE</version>
             <scope>compile</scope>
+        </dependency>
+
+        <!-- https://mvnrepository.com/artifact/com.google.guava/guava -->
+        <dependency>
+            <groupId>com.google.guava</groupId>
+            <artifactId>guava</artifactId>
+            <version>${google.quava.version}</version>
         </dependency>
     </dependencies>
 

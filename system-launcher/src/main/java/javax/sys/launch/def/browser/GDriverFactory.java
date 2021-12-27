@@ -1,4 +1,3 @@
-package javax.sys.launch.def.browser;
 /**
  * Copyright 2021 tom werner
  * <p>
@@ -14,6 +13,7 @@ package javax.sys.launch.def.browser;
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+package javax.sys.launch.def.browser;
 
 import io.github.bonigarcia.wdm.WebDriverManager;
 import io.github.bonigarcia.wdm.config.DriverManagerType;
@@ -23,25 +23,19 @@ import org.openqa.selenium.WebDriver;
 import javax.annotation.processing.SupportedSourceVersion;
 import javax.lang.model.SourceVersion;
 import javax.sys.launch.def.browser.plattform.DriverInstance;
+import javax.sys.launch.def.browser.plattform.ExplorerValueMapper;
 import javax.sys.launch.def.browser.plattform.Sniffer;
 import javax.sys.launch.def.browser.plattform.SystemExplorer;
-import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.Map;
-import java.util.Objects;
-import java.util.TreeMap;
-import java.util.UUID;
+import java.util.*;
 
 /**
  * System driver, which automates and system-specific performs
  * the specified Selenium Driver, do without preparations to meet.
  */
 @SupportedSourceVersion(SourceVersion.RELEASE_17)
-public @NotNull record GDriverFactory(@NotNull DriverInstance instance, @NotNull String id, boolean autoClose)
-        implements SystemExplorer {
-
-    private static final Map<String, WebDriver> queue = new TreeMap<>();
-    private static Path pth;
+public @NotNull record GDriverFactory(@NotNull DriverInstance instance, long id, boolean autoClose)
+        implements SystemExplorer, ExplorerValueMapper {
 
     /**
      * Analyzes the OS and its default web browser to play this as a stable class.
@@ -52,7 +46,8 @@ public @NotNull record GDriverFactory(@NotNull DriverInstance instance, @NotNull
         LOGGER.info("start of creation and run a instance of the default web-driver");
         /* Creates a new DriverFactory instance with the system default
          * web-driver as parameter. */
-        return new GDriverFactory(Sniffer.systemBrowser(), UUID.randomUUID().toString(), true);
+        return new GDriverFactory(Sniffer.systemBrowser(),
+                new Random().nextLong(), true);
     }
 
     @Override public WebDriver createDriverInstance() {
@@ -60,9 +55,6 @@ public @NotNull record GDriverFactory(@NotNull DriverInstance instance, @NotNull
             LOGGER.info("manage web driver components and install feature of this");
             WebDriverManager manage = WebDriverManager.getInstance(DriverManagerType.valueOf(instance.name()));
             manage.cachePath(tmpPath).setup();
-            /* Store the generated path for later processing and
-             * deleting the created files when downloading the JVM. */
-            pth = Paths.get(manage.getDownloadedDriverPath());
 
             LOGGER.info("creates a instance of the default web-driver and performs this using the installed features");
             WebDriver driver = (WebDriver) ((java.lang.reflect.Constructor<?>)
@@ -71,6 +63,10 @@ public @NotNull record GDriverFactory(@NotNull DriverInstance instance, @NotNull
 
             /* Add the created driver into the queue. */
             queue.put(id, driver);
+            /* Store the generated path for later processing and
+             * deleting the created files when downloading the JVM. */
+            queue.put(id, manage.getDownloadedDriverPath());
+
             LOGGER.info(driver + " is created and was admitted to the queue.");
             return driver;
         } catch (Exception e) {
@@ -80,13 +76,15 @@ public @NotNull record GDriverFactory(@NotNull DriverInstance instance, @NotNull
     }
 
     @Override public void close() {
-        if(Objects.nonNull(queue.get(id)) && autoClose) {
-            LOGGER.info("destroy web-driver instance and clean with gc.");
-            queue.get(id).quit();
-            LOGGER.info("delete downloaded files from " + pth);
-            if (Objects.nonNull(pth))
-                pth.toFile().deleteOnExit();
-        }
+        queue.get(id).stream().forEach(element -> {
+            if(element instanceof WebDriver) {
+                LOGGER.info("destroy" + element + "instance and clean with gc.");
+                ((WebDriver) element).quit();
+            } else {
+                LOGGER.info("delete downloaded files from " + element);
+                Paths.get(element.toString()).toFile().deleteOnExit();
+            }
+        });
     }
 }
 

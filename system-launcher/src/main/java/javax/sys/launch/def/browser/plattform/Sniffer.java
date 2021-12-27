@@ -20,8 +20,8 @@ import java.util.stream.Collectors;
 @SupportedSourceVersion(SourceVersion.RELEASE_17)
 public @NotNull record Sniffer(@NotNull OS os, @NotNull String[] regex) {
     /**
-     *
-     * @return
+     * Find the name of the system web-browser
+     * @return {@link DriverInstance#name() name of system web-browser}
      */
     public static @NotNull DriverInstance systemBrowser() {
         return Objects.requireNonNull(Arrays.stream(DriverInstance.values())
@@ -30,10 +30,10 @@ public @NotNull record Sniffer(@NotNull OS os, @NotNull String[] regex) {
     }
 
     /**
-     *
      * For error avoidance, both name spends are compared with the
      * help of {@link String#toLowerCase() lower case}
      * @return name of the System-default-browser
+     * @see #name()
      */
     public static @Nullable String systemBrowserName() {
         return Objects.requireNonNull(Arrays.stream(OS.values())
@@ -45,8 +45,9 @@ public @NotNull record Sniffer(@NotNull OS os, @NotNull String[] regex) {
     }
 
     /**
-     *
-     * @return
+     * Compares the name of existing web-driver values with the system default web driver name <br>
+     * used regex for find the name
+     * @return regex command for find the system default web-browser
      */
     public @Nullable String name() {
         try {// registration where we find the default browser
@@ -61,7 +62,7 @@ public @NotNull record Sniffer(@NotNull OS os, @NotNull String[] regex) {
                             ).collect(Collectors.toList()), "");
         } catch (IOException e) {
             e.printStackTrace();
+            return null;
         }
-        return null;
     }
 }
