@@ -28,6 +28,7 @@ import javax.sys.launch.def.browser.plattform.Sniffer;
 import javax.sys.launch.def.browser.plattform.SystemExplorer;
 import java.nio.file.Paths;
 import java.util.*;
+import java.util.function.Consumer;
 
 /**
  * System driver, which automates and system-specific performs
@@ -77,10 +78,11 @@ public @NotNull record GDriverFactory(@NotNull DriverInstance instance, long id,
 
     @Override public void close() {
         queue.get(id).stream().forEach(element -> {
-            if(element instanceof WebDriver) {
-                LOGGER.info("destroy " + element.toString().replace(':', '[')
+            if(element instanceof WebDriver driver) {
+                LOGGER.info("destroy " + driver.toString().replace(": ", " [")
                         + "] instance and clean with gc.");
-                ((WebDriver) element).quit();
+                /* Closed the browser window*/
+                driver.quit();
             } else {
                 LOGGER.info("delete downloaded files from [" + element + "]");
                 Paths.get(element.toString()).toFile().deleteOnExit();
