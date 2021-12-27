@@ -28,7 +28,6 @@ import javax.sys.launch.def.browser.plattform.Sniffer;
 import javax.sys.launch.def.browser.plattform.SystemExplorer;
 import java.nio.file.Paths;
 import java.util.*;
-import java.util.function.Consumer;
 
 /**
  * System driver, which automates and system-specific performs
@@ -77,7 +76,7 @@ public @NotNull record GDriverFactory(@NotNull DriverInstance instance, long id,
     }
 
     @Override public void close() {
-        queue.get(id).stream().forEach(element -> {
+        queue.get(id).forEach(element -> {
             if(element instanceof WebDriver driver) {
                 LOGGER.info("destroy " + driver.toString().replace(": ", " [")
                         + "] instance and clean with gc.");
