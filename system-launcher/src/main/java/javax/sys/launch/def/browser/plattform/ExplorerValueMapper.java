@@ -12,4 +12,9 @@ public interface ExplorerValueMapper {
     Multimap<Long, Object> queue = ArrayListMultimap.create();
     /** @return class id */
     long id();
+    /**
+     * @param o -> cleanable object
+     * @param r -> action by clean
+     */
+    void clean(Object o, Runnable r);
 }

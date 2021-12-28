@@ -26,8 +26,9 @@ import javax.sys.launch.def.browser.plattform.DriverInstance;
 import javax.sys.launch.def.browser.plattform.ExplorerValueMapper;
 import javax.sys.launch.def.browser.plattform.Sniffer;
 import javax.sys.launch.def.browser.plattform.SystemExplorer;
+import java.lang.ref.Cleaner;
 import java.nio.file.Paths;
-import java.util.*;
+import java.util.Random;
 
 /**
  * System driver, which automates and system-specific performs
@@ -37,8 +38,11 @@ import java.util.*;
 public @NotNull record GDriverFactory(@NotNull DriverInstance instance, long id, boolean autoClose)
         implements SystemExplorer, ExplorerValueMapper {
 
+    private static final Cleaner cleaner = Cleaner.create();
+
     /**
      * Analyzes the OS and its default web browser to play this as a stable class.
+     *
      * @return standard selenium driver, which has been
      * stored in the system settings of the OS
      */
@@ -54,39 +58,49 @@ public @NotNull record GDriverFactory(@NotNull DriverInstance instance, long id,
         try {
             LOGGER.info("manage web driver components and install feature of this");
             WebDriverManager manage = WebDriverManager.getInstance(DriverManagerType.valueOf(instance.name()));
+            /* Set download path for the driver.jar file*/
             manage.cachePath(tmpPath).setup();
-
-            LOGGER.info("creates a instance of the default web-driver and performs this using the installed features");
+            LOGGER.info("creates a  instance of the default web-driver and performs this using the installed features");
+            /* Creates a new WebDriver instance by inserting the collected
+             * data to the required digits via reflection and thus can be
+             * adjusted a constructor call. */
             WebDriver driver = (WebDriver) ((java.lang.reflect.Constructor<?>)
+                    /* Create a Web driver instance using the Manager class and its previously
+                     * transferred browser name */
                     Class.forName(manage.getDriverManagerType().browserClass()).getConstructor())
+                    /* Realization of instantiation */
                     .newInstance();
-
             /* Add the created driver into the queue. */
             queue.put(id, driver);
             /* Store the generated path for later processing and
              * deleting the created files when downloading the JVM. */
             queue.put(id, manage.getDownloadedDriverPath());
-
             LOGGER.info(driver + " is created and was admitted to the queue.");
             return driver;
         } catch (Exception e) {
-            LOGGER.error(String.valueOf(e.fillInStackTrace()));
+            LOGGER.error(String.valueOf(e));
             return null;
         }
     }
 
     @Override public void close() {
-        queue.get(id).forEach(element -> {
-            if(element instanceof WebDriver driver) {
-                LOGGER.info("destroy " + driver.toString().replace(": ", " [")
-                        + "] instance and clean with gc.");
-                /* Closed the browser window*/
-                driver.quit();
-            } else {
-                LOGGER.info("delete downloaded files from [" + element + "]");
-                Paths.get(element.toString()).toFile().deleteOnExit();
-            }
-        });
+        if (autoClose) {
+            queue.get(id).forEach(element -> {
+                if (element instanceof WebDriver driver) {
+                    clean(driver, driver::quit);
+                } else if (Paths.get(element.toString()).toFile().exists()) {
+                    clean(element, () -> Paths.get(element.toString()).toFile().deleteOnExit());
+                }
+            });
+        }
+    }
+
+    @Override public void clean(Object o, Runnable r) {
+        LOGGER.info("destroy/delete " + (o.toString().contains(":") ?
+                o.toString().replace(": ", " [") : "files from [" + o)
+                + "] instance and clean with gc.");
+        cleaner.register(o, r);
+        System.gc();
     }
 }
 
