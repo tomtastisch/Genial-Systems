@@ -6,9 +6,6 @@ import org.openqa.selenium.WebDriver;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.function.Consumer;
-import java.util.function.Function;
-
 /**
  * This class serves to ensure and standardize the
  * factory classes and their instance functions.<br>
