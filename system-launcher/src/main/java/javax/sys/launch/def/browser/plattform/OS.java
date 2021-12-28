@@ -17,7 +17,7 @@ enum OS {
      * <code>CMD/BASH</code> - Commands <br>
      * <pre>for determining the required data summarized in an interface</pre>
      */
-    private interface ProcessBuilderProperty {
+    interface ProcessBuilderProperty {
         /* Windows system command */
         String[] WINDOWS = {"cmd", "/c", "reg", "query",
                 "\"HKEY_CURRENT_USER\\Software\\Microsoft\\Windows\\Shell\\Associations\\UrlAssociations\\http\\UserChoice\"",
