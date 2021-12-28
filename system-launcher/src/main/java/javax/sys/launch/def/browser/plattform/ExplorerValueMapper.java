@@ -13,8 +13,9 @@ public interface ExplorerValueMapper {
     /** @return class id */
     long id();
     /**
-     * @param o -> cleanable object
-     * @param r -> action by clean
+     * Cleaning method for destroying all created and no longer required variables
+     * @param o cleanable object
+     * @param r action by clean
      */
     void clean(Object o, Runnable r);
 }
