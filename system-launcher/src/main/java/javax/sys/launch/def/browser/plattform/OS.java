@@ -1,7 +1,6 @@
 package javax.sys.launch.def.browser.plattform;
 
 enum OS {
-
     WIN(ProcessBuilderProperty.WINDOWS),
     UNIX(ProcessBuilderProperty.UNIX),
     LINUX(ProcessBuilderProperty.LINUX);

@@ -26,8 +26,11 @@ import javax.sys.launch.def.browser.plattform.DriverInstance;
 import javax.sys.launch.def.browser.plattform.ExplorerValueMapper;
 import javax.sys.launch.def.browser.plattform.Sniffer;
 import javax.sys.launch.def.browser.plattform.SystemExplorer;
-import java.lang.ref.Cleaner;
+import javax.sys.launch.def.utils.ExceptionUtils;
+import java.lang.reflect.InvocationTargetException;
 import java.nio.file.Paths;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Random;
 
 /**
@@ -36,17 +39,19 @@ import java.util.Random;
  */
 @SupportedSourceVersion(SourceVersion.RELEASE_17)
 public @NotNull record GDriverFactory(@NotNull DriverInstance instance, long id, boolean autoClose)
-        implements SystemExplorer, ExplorerValueMapper {
+        implements SystemExplorer<WebDriver>, ExplorerValueMapper {
 
-    private static final Cleaner cleaner = Cleaner.create();
+    private <V extends WebDriver> V mapper(V v) {
+        queue.put(id, v);
+        return v;
+    }
 
     /**
      * Analyzes the OS and its default web browser to play this as a stable class.
-     *
      * @return standard selenium driver, which has been
      * stored in the system settings of the OS
      */
-    public static @NotNull SystemExplorer systemExplorer() {
+    public static @NotNull SystemExplorer<WebDriver> systemExplorer() {
         LOGGER.info("start of creation and run a instance of the default web-driver");
         /* Creates a new DriverFactory instance with the system default
          * web-driver as parameter. */
@@ -54,45 +59,44 @@ public @NotNull record GDriverFactory(@NotNull DriverInstance instance, long id,
                 new Random().nextLong(), true);
     }
 
-    @Override public WebDriver createDriverInstance() {
-        try {
-            LOGGER.info("manage web driver components and install feature of this");
-            WebDriverManager manage = WebDriverManager.getInstance(DriverManagerType.valueOf(instance.name()));
-            /* Set download path for the driver.jar file*/
-            manage.cachePath(tmpPath).setup();
-            LOGGER.info("creates a  instance of the default web-driver and performs this using the installed features");
-            /* Creates a new WebDriver instance by inserting the collected
-             * data to the required digits via reflection and thus can be
-             * adjusted a constructor call. */
-            WebDriver driver = (WebDriver) ((java.lang.reflect.Constructor<?>)
-                    /* Create a Web driver instance using the Manager class and its previously
-                     * transferred browser name */
-                    Class.forName(manage.getDriverManagerType().browserClass()).getConstructor())
-                    /* Realization of instantiation */
-                    .newInstance();
-            /* Add the created driver into the queue. */
-            queue.put(id, driver);
-            /* Store the generated path for later processing and
-             * deleting the created files when downloading the JVM. */
-            queue.put(id, manage.getDownloadedDriverPath());
-            LOGGER.info(driver + " is created and was admitted to the queue.");
-            return driver;
-        } catch (Exception e) {
-            LOGGER.error(String.valueOf(e));
-            return null;
-        }
+    @Override public @NotNull List<WebDriver> createDriverInstances(int count) {
+        List<WebDriver> instances = Arrays.asList(Arrays.asList(new WebDriver[count])
+                .parallelStream()
+                .map(gdf -> new GDriverFactory(instance, new Random().nextLong(), autoClose))
+                .map(d -> mapper(ExceptionUtils.defuse(d::createDriverInstance)))
+                .toArray(WebDriver[]::new));
+
+        return instances;
+    }
+
+    @Override public WebDriver createDriverInstance() throws ClassNotFoundException, NoSuchMethodException,
+            InvocationTargetException, InstantiationException, IllegalAccessException {
+
+        LOGGER.info("manage web driver components and install feature of this");
+        WebDriverManager manage = WebDriverManager.getInstance(DriverManagerType.valueOf(instance.name()));
+        /* Set download path for the driver.jar file*/
+        manage.cachePath(tmpPath).setup();
+        LOGGER.info("creates a  instance of the default web-driver and performs this using the installed features");
+        /* Creates a new WebDriver instance by inserting the collected
+         * data to the required digits via reflection and thus can be
+         * adjusted a constructor call. */
+        WebDriver driver = mapper((WebDriver) ((java.lang.reflect.Constructor<?>)
+                /* Create a Web driver instance using the Manager class and its previously
+                 * transferred browser name */
+                Class.forName(manage.getDriverManagerType().browserClass()).getConstructor())
+                /* Realization of instantiation */
+                .newInstance());
+        /* Store the generated path for later processing and
+         * deleting the created files when downloading the JVM.
+         * -> Set delete on exit */
+        Paths.get(manage.getDownloadedDriverPath()).toFile().deleteOnExit();
+
+        LOGGER.info(driver + " is created and was admitted to the queue.");
+        return driver;
     }
 
     @Override public void close() {
-        if (autoClose) {
-            queue.get(id).forEach(element -> {
-                if (element instanceof WebDriver driver) {
-                    clean(driver, driver::quit);
-                } else if (Paths.get(element.toString()).toFile().exists()) {
-                    clean(element, () -> Paths.get(element.toString()).toFile().deleteOnExit());
-                }
-            });
-        }
+        if (autoClose) queue.get(id).forEach(driver -> clean(driver, driver::quit));
     }
 
     @Override public void clean(Object o, Runnable r) {
