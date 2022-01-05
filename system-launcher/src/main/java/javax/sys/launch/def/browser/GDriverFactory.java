@@ -41,9 +41,17 @@ import java.util.Random;
 public @NotNull record GDriverFactory(@NotNull DriverInstance instance, long id, boolean autoClose)
         implements SystemExplorer<WebDriver>, ExplorerValueMapper {
 
-    private <V extends WebDriver> V mapper(V v) {
-        queue.put(id, v);
-        return v;
+    /**
+     * The specified object is transferred to the internal list of objects assigned
+     * to the ID of the object. Subsequently, the object is given back again.
+     * This is used to prevent the boiler plate code and enables writing to individuals.
+     * @param element the given element to add to the list
+     * @param <E> the element
+     * @return the given element self
+     */
+    private <E extends WebDriver> E mappedObject(E element) {
+        queue.put(id, element);
+        return element;
     }
 
     /**
@@ -60,13 +68,12 @@ public @NotNull record GDriverFactory(@NotNull DriverInstance instance, long id,
     }
 
     @Override public @NotNull List<WebDriver> createDriverInstances(int count) {
-        List<WebDriver> instances = Arrays.asList(Arrays.asList(new WebDriver[count])
+
+        return Arrays.asList(Arrays.asList(new WebDriver[count])
                 .parallelStream()
                 .map(gdf -> new GDriverFactory(instance, new Random().nextLong(), autoClose))
-                .map(d -> mapper(ExceptionUtils.defuse(d::createDriverInstance)))
+                .map(d -> mappedObject(ExceptionUtils.defuse(d::createDriverInstance)))
                 .toArray(WebDriver[]::new));
-
-        return instances;
     }
 
     @Override public WebDriver createDriverInstance() throws ClassNotFoundException, NoSuchMethodException,
@@ -80,7 +87,7 @@ public @NotNull record GDriverFactory(@NotNull DriverInstance instance, long id,
         /* Creates a new WebDriver instance by inserting the collected
          * data to the required digits via reflection and thus can be
          * adjusted a constructor call. */
-        WebDriver driver = mapper((WebDriver) ((java.lang.reflect.Constructor<?>)
+        WebDriver driver = mappedObject((WebDriver) ((java.lang.reflect.Constructor<?>)
                 /* Create a Web driver instance using the Manager class and its previously
                  * transferred browser name */
                 Class.forName(manage.getDriverManagerType().browserClass()).getConstructor())

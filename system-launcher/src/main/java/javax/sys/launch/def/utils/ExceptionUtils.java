@@ -1,8 +1,16 @@
 package javax.sys.launch.def.utils;
 
+import io.github.bonigarcia.wdm.WebDriverManager;
+import org.openqa.selenium.WebDriver;
+
 import java.util.concurrent.Callable;
 
 public final class ExceptionUtils {
+
+    public static void main(String[] args) {
+        WebDriverManager.getInstance();
+    }
+
     /**
      * this is a new one, n/a in public libs Callable just suits as a functional interface
      * in JDK throwing Exception
