@@ -71,7 +71,7 @@ public @NotNull record GDriverFactory(@NotNull DriverInstance instance, long id,
         return Arrays.asList(Arrays.asList(new WebDriver[count])
                 .parallelStream()
                 .map(gdf -> new GDriverFactory(instance, new Random().nextLong(), autoClose))
-                .map(wd -> mappedObject(ExceptionUtils.unthrow(wd::createDriverInstance)))
+                .map(wd -> mappedObject(ExceptionUtils.unthrow(wd::createDriverInstance, 1000)))
                 .toArray(WebDriver[]::new));
     }
 

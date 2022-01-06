@@ -7,23 +7,20 @@ import java.util.concurrent.Callable;
 
 public final class ExceptionUtils <V> {
 
-    volatile V v = null;
-
-    public static void main(String[] args) {
-        WebDriverManager.getInstance();
-    }
-
     /**
      * @param callable {@link Callable}
      * @param <V>      callable return
+     * @param timeOut  time to break up the call
      * @return null by throws
      */
-    public static <V> V unthrow(Callable<V> callable) {
-        try {
-            return defuse(callable);
-        } catch (Throwable ignored) {
-            return null;
+    public static <V> V unthrow(Callable<V> callable, long timeOut) {
+        V v = null;
+        final long l = System.currentTimeMillis() + timeOut;
+        while (l < System.currentTimeMillis() && Objects.isNull(v)) {
+            try { v = defuse(callable);}
+            catch (Throwable ignored) {/* None... */ }
         }
+        return v;
     }
 
     /**
