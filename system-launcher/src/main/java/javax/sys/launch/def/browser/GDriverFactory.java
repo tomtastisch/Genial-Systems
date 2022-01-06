@@ -68,11 +68,10 @@ public @NotNull record GDriverFactory(@NotNull DriverInstance instance, long id,
     }
 
     @Override public @NotNull List<WebDriver> createDriverInstances(int count) {
-
         return Arrays.asList(Arrays.asList(new WebDriver[count])
                 .parallelStream()
                 .map(gdf -> new GDriverFactory(instance, new Random().nextLong(), autoClose))
-                .map(d -> mappedObject(ExceptionUtils.defuse(d::createDriverInstance)))
+                .map(wd -> mappedObject(ExceptionUtils.unthrow(wd::createDriverInstance)))
                 .toArray(WebDriver[]::new));
     }
 

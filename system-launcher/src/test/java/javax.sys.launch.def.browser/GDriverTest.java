@@ -21,6 +21,7 @@ public class GDriverTest {
     @Test public void build_driver_list() {
         try (SystemExplorer<WebDriver> explorer = GDriverFactory.systemExplorer()) {
             List<WebDriver> drivers = explorer.createDriverInstances(3);
+            /* Check are the objects non-null*/
             drivers.forEach(e -> {assert Objects.nonNull(e);});
         } catch(Exception e) {
             e.printStackTrace();
