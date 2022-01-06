@@ -44,7 +44,7 @@ public @NotNull record GDriverFactory(@NotNull DriverInstance instance, long id,
     /**
      * The specified object is transferred to the internal list of objects assigned
      * to the ID of the object. Subsequently, the object is given back again.
-     * This is used to prevent the boiler plate code and enables writing to individuals.
+     * This is used to prevent the boilerplate code and enables writing to individuals.
      * @param element the given element to add to the list
      * @param <E> the element
      * @return the given element self
