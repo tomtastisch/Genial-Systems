@@ -45,9 +45,9 @@ public @NotNull record GDriverFactory(@NotNull DriverInstance instance, long id,
      * The specified object is transferred to the internal list of objects assigned
      * to the ID of the object. Subsequently, the object is given back again.
      * This is used to prevent the boilerplate code and enables writing to individuals.
-     * @param element the given element to add to the list
-     * @param <E> the element
-     * @return the given element self
+     * @param element   the given element to add to the list
+     * @param <E>       the element
+     * @return  the given element self
      */
     private <E extends WebDriver> E mappedObject(E element) {
         queue.put(id, element);
@@ -56,10 +56,14 @@ public @NotNull record GDriverFactory(@NotNull DriverInstance instance, long id,
 
     /**
      * Analyzes the OS and its default web browser to play this as a stable class.
-     * @return standard selenium driver, which has been
-     * stored in the system settings of the OS
+     * @return  standard selenium driver, which has been
+     *          stored in the system settings of the OS
      */
     public static @NotNull SystemExplorer<WebDriver> systemExplorer() {
+        return systemExplorer(true);
+    }
+
+    public static @NotNull SystemExplorer<WebDriver> systemExplorer(boolean autoClose) {
         LOGGER.info("start of creation and run a instance of the default web-driver");
         /* Creates a new DriverFactory instance with the system default
          * web-driver as parameter. */
