@@ -21,7 +21,6 @@ import java.util.stream.IntStream;
 public class PortListener {
 
     /**
-     *
      * @return stream of listed ports
      * @throws IOException
      */
