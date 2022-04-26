@@ -6,7 +6,9 @@ import org.jetbrains.annotations.Nullable;
 
 import javax.annotation.processing.SupportedSourceVersion;
 import javax.lang.model.SourceVersion;
+import javax.sys.launch.def.browser.err.OSException;
 import javax.sys.launch.def.browser.plattform.osc.OS;
+import javax.sys.launch.def.utils.ExceptionUtils;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -27,7 +29,7 @@ public @NotNull record Sniffer(@NotNull OS os, @NotNull String[] regex) {
      */
     public static @NotNull DriverInstance systemBrowser() {
         return Objects.requireNonNull(Arrays.stream(DriverInstance.values())
-                .filter(driver -> driver.name().equals(systemBrowserName()))
+                .filter(driver -> driver.name().equals(ExceptionUtils.defuse(Sniffer::systemBrowserName)))
                 .findFirst().orElse(null));
     }
 
@@ -37,11 +39,16 @@ public @NotNull record Sniffer(@NotNull OS os, @NotNull String[] regex) {
      * @return  name of the System-default-browser
      * @see     #name()
      */
-    public static @Nullable String systemBrowserName() {
+    public static @Nullable String systemBrowserName() throws OSException {
+
+        if(!Arrays.stream(OS.values()).map(e -> e.toString()
+                .toLowerCase()).toList().contains(System.getProperty("os.name")))
+            throw new OSException();
+
         return Objects.requireNonNull(Arrays.stream(OS.values())
                 .filter(os -> System.getProperty("os.name")
                         /* Equals the name of the system-property return
-                         * with the name of value os-value name.*/
+                         * with the name of value os-value name. */
                         .toLowerCase().contains(os.name().toLowerCase()))
                 .findFirst().orElse(null)).browser.name();
     }

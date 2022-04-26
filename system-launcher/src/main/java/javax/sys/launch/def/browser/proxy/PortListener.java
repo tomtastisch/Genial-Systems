@@ -1,9 +1,6 @@
 package javax.sys.launch.def.browser.proxy;
 
-import org.apache.commons.io.IOUtils;
-
 import java.io.IOException;
-import java.io.InputStream;
 import java.net.DatagramSocket;
 import java.net.ServerSocket;
 import java.nio.charset.StandardCharsets;
@@ -14,7 +11,12 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 /**
+ * Class for listening to single or all available ports.
+ * Used to read out and assign already used port to an application or to
+ * determine still free ports, which can be used for further operation.
  *
+ * @ToDo: Shall be used later to determine the ports in which vm or
+ *        server are running, if necessary to check localhost related pages
  */
 public class PortListener {
 
@@ -24,29 +26,26 @@ public class PortListener {
      * @throws IOException
      */
     public static String listenPorts() throws IOException {
-        Process p = Runtime.getRuntime().exec(new String[] { "lsof", "-i" });
-        InputStream commandOutput = p.getInputStream();
-        return IOUtils.toString(commandOutput, StandardCharsets.UTF_8.name());
+        return org.apache.commons.io.IOUtils.toString(
+                Runtime.getRuntime().exec(new String[] { "lsof", "-i" }).getInputStream(),
+                StandardCharsets.UTF_8.name());
     }
 
     /**
-     *
-     * @param firstPort
-     * @param lastPort
-     * @return
+     * @param firstPort -> first port to read
+     * @param lastPort  -> last port to read
+     * @return all not available ports within the given area
      */
     public static List<Integer> notAvailablePorts(int firstPort, int lastPort) {
-        return new ArrayList<>(
-                org.apache.commons.collections4.CollectionUtils.disjunction(
+        return new ArrayList<>(org.apache.commons.collections4.CollectionUtils.disjunction(
                     IntStream.rangeClosed(firstPort, lastPort).boxed().collect(Collectors.toList()),
                     availablePorts(firstPort, lastPort)));
     }
 
     /**
-     *
-     * @param firstPort
-     * @param lastPort
-     * @return
+     * @param firstPort -> first port to read
+     * @param lastPort  -> last port to read
+     * @return all available ports within the given area
      */
     public static List<Integer> availablePorts(int firstPort, int lastPort) {
         return Arrays.stream(IntStream.rangeClosed(firstPort, lastPort).toArray())
