@@ -67,8 +67,7 @@ public @NotNull record GDriverFactory(@NotNull DriverInstance instance, long id,
         LOGGER.info("start of creation and run a instance of the default web-driver");
         /* Creates a new DriverFactory instance with the system default
          * web-driver as parameter. */
-        return new GDriverFactory(Sniffer.systemBrowser(),
-                new Random().nextLong(), true);
+        return new GDriverFactory(Sniffer.systemBrowser(), new Random().nextLong(), true);
     }
 
     @Override public @NotNull List<WebDriver> createDriverInstances(int count) {

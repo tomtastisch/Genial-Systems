@@ -6,6 +6,7 @@ import org.jetbrains.annotations.Nullable;
 
 import javax.annotation.processing.SupportedSourceVersion;
 import javax.lang.model.SourceVersion;
+import javax.sys.launch.def.browser.plattform.osc.OS;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -19,6 +20,7 @@ import java.util.stream.Collectors;
  */
 @SupportedSourceVersion(SourceVersion.RELEASE_17)
 public @NotNull record Sniffer(@NotNull OS os, @NotNull String[] regex) {
+
     /**
      * Find the name of the system web-browser
      * @return  {@link DriverInstance#name() name of system web-browser}
@@ -52,14 +54,14 @@ public @NotNull record Sniffer(@NotNull OS os, @NotNull String[] regex) {
     public @Nullable String name() {
         try {// registration where we find the default browser
             return StringUtils.join(
-                    new BufferedReader(new InputStreamReader(new ProcessBuilder(regex)
-                            .start().getInputStream())).lines()
-                            .filter(Objects::nonNull)
-                            .map(e -> Arrays.stream(DriverInstance.values())
-                                    .filter(driver -> e.matches("(.*)" + driver.get().regex() + "(.*)"))
-                                    .map(Enum::name)
-                                    .findFirst().orElse("")
-                            ).collect(Collectors.toList()), "");
+                new BufferedReader(new InputStreamReader(new ProcessBuilder(regex)
+                    .start().getInputStream())).lines()
+                    .filter(Objects::nonNull)
+                    .map(e -> Arrays.stream(DriverInstance.values())
+                            .filter(driver -> e.matches("(.*)" + driver.get().regex() + "(.*)"))
+                            .map(Enum::name)
+                            .findFirst().orElse("")
+                    ).collect(Collectors.toList()), "");
         } catch (IOException e) {
             e.printStackTrace();
             return null;

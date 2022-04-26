@@ -8,6 +8,7 @@
         <outputRelativeToContentRoot value="true" />
         <module name="system-browser" />
         <module name="system-launcher" />
+        <module name="notification-panel" />
       </profile>
     </annotationProcessing>
   </component>
