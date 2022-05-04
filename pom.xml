@@ -11,7 +11,6 @@
 
     <modules>
         <module>system-launcher</module>
-        <module>notification-panel</module>
     </modules>
 
     <properties>
