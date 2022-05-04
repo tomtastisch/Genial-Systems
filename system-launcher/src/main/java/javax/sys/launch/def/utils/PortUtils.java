@@ -4,6 +4,9 @@ import org.apache.commons.collections4.MultiValuedMap;
 import org.apache.commons.collections4.multimap.ArrayListValuedHashMap;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
+import org.jetbrains.annotations.Contract;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -34,7 +37,7 @@ public final class PortUtils {
      * @param ports -> Ports of the applications
      * @return a list of the applications of the given ports
      */
-    public static Map<String, String> getPortApplication(int... ports) {
+    public static @Nullable Map<String, String> getPortApplication(int... ports) {
 
         final List<String> runningApps = getRunningApps();
 
@@ -55,7 +58,7 @@ public final class PortUtils {
      * @param ports -> port for which the information is to be determined
      * @return the information of this port
      */
-    private static Map<String, Collection<String>> getPortInfo(List<String> ports) {
+    private static Map<String, Collection<String>> getPortInfo(@NotNull List<String> ports) {
         final List<String> keys  = Arrays.stream(cleanString(ports.remove(0)).split(SEPARATOR)).toList();
         final MultiValuedMap<String, String> portMap = new ArrayListValuedHashMap<>();
 
@@ -71,7 +74,8 @@ public final class PortUtils {
     /**
      * @return the application that holds the given port occupied
      */
-    @Deprecated public static String getRunningAppOf(int pid) {
+    @Contract(pure = true)
+    @Deprecated public static @Nullable String getRunningAppOf(int pid) {
 
         return null;
     }
@@ -80,7 +84,7 @@ public final class PortUtils {
      * @ToDo: Complete implementation of the information collection.
      * @return All applications that currently occupy the current ports (Provided they occupy one or more ports)
      */
-    public static List<String> getRunningApps() {
+    public static @Nullable List<String> getRunningApps() {
         try {
             String process;
             // getRuntime: Returns the runtime object associated with the current Java application.
@@ -124,7 +128,8 @@ public final class PortUtils {
      * @param lastPort  -> last port to read
      * @return all not available ports within the given area
      */
-    public static List<Integer> usedPorts(int firstPort, int lastPort) {
+    @Contract("_, _ -> new")
+    public static @NotNull List<Integer> usedPorts(int firstPort, int lastPort) {
         return new ArrayList<>(org.apache.commons.collections4.CollectionUtils.disjunction(
                     IntStream.rangeClosed(firstPort, lastPort).boxed().collect(Collectors.toList()),
                     availablePorts(firstPort, lastPort)));
@@ -165,7 +170,7 @@ public final class PortUtils {
         } catch(IOException e) { throw new RuntimeException(""); }
     }
 
-    private static String cleanString(String s) {
+    private static String cleanString(@NotNull String s) {
         return StringUtils.join(Arrays.stream(s.split("\s"))
                 .filter(col -> !col.replace("\s", "").equals(""))
                 .toArray(), SEPARATOR);
