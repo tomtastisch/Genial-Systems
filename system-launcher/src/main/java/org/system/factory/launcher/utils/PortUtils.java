@@ -1,4 +1,4 @@
-package javax.sys.launch.def.utils;
+package org.system.factory.launcher.utils;
 
 import org.apache.commons.collections4.MultiValuedMap;
 import org.apache.commons.collections4.multimap.ArrayListValuedHashMap;
@@ -27,6 +27,7 @@ public final class PortUtils {
     private static final String SEPARATOR = ",";
     private static final String[] COMMAND = new String[] { "lsof", "-i" };
 
+    @Deprecated
     public static void main(String[] args) throws IOException {
         //System.out.println(PortUtils.usedPorts(0,10000));
         System.out.println(PortUtils.getPortApplication(8081, 2022));
@@ -89,7 +90,7 @@ public final class PortUtils {
             String process;
             // getRuntime: Returns the runtime object associated with the current Java application.
             // exec: Executes the specified string command in a separate process.
-            Process p = Runtime.getRuntime().exec("ps -few");
+            Process p = Runtime.getRuntime().exec("ps -few", null, null);
 
             BufferedReader input = new BufferedReader(new InputStreamReader(p.getInputStream()));
             while ((process = input.readLine()) != null) {
@@ -152,8 +153,8 @@ public final class PortUtils {
      * @param port -> the port to check for availability.
      */
     public static boolean isPortAvailable(int port) {
-        try (var ss = new ServerSocket(port); var ds = new DatagramSocket(port)) {
-            return true;
+        try (var socket = new ServerSocket(port); var ds = new DatagramSocket(port)) {
+            return socket.getChannel().isOpen();
         } catch (IOException e) {
             return false;
         }

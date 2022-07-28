@@ -1,4 +1,4 @@
-package javax.sys.launch.def.browser.plattform;
+package org.system.factory.launcher.browser.plattform;
 /**
  * This class serves to ensure and standardize the
  * factory classes and their instance functions.<br>

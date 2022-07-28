@@ -2,16 +2,19 @@
 <project version="4">
   <component name="CompilerConfiguration">
     <annotationProcessing>
+      <profile default="true" name="Default" enabled="true" />
       <profile name="Maven default annotation processors profile" enabled="true">
         <sourceOutputDir name="target/generated-sources/annotations" />
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
-        <outputRelativeToContentRoot value="true" />
+        <module name="gsys-automate-core" />
         <module name="system-browser" />
-        <module name="system-launcher" />
+        <module name="Genial-Systems.system-launcher" />
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel>
+      <module name="gsys-automate" target="18" />
       <module name="notification-panel" target="17" />
+      <module name="system-launcher" target="17" />
     </bytecodeTargetLevel>
   </component>
 </project>

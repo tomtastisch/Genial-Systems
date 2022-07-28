@@ -1,4 +1,4 @@
-package javax.sys.launch.def.browser.err;
+package org.system.factory.launcher.browser.err;
 
 
 public class OSException extends java.io.IOException {

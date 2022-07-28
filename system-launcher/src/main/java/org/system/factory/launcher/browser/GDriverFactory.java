@@ -13,20 +13,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package javax.sys.launch.def.browser;
+package org.system.factory.launcher.browser;
 
 import io.github.bonigarcia.wdm.WebDriverManager;
 import io.github.bonigarcia.wdm.config.DriverManagerType;
+import lombok.SneakyThrows;
 import org.jetbrains.annotations.NotNull;
 import org.openqa.selenium.WebDriver;
+import org.system.factory.launcher.browser.plattform.DriverInstance;
 
 import javax.annotation.processing.SupportedSourceVersion;
 import javax.lang.model.SourceVersion;
-import javax.sys.launch.def.browser.plattform.DriverInstance;
-import javax.sys.launch.def.browser.plattform.ExplorerValueMapper;
-import javax.sys.launch.def.browser.plattform.Sniffer;
-import javax.sys.launch.def.browser.plattform.SystemExplorer;
-import javax.sys.launch.def.utils.ExceptionUtils;
+
+import org.system.factory.launcher.browser.plattform.ExplorerValueMapper;
+import org.system.factory.launcher.browser.plattform.Sniffer;
+import org.system.factory.launcher.browser.plattform.SystemExplorer;
 import java.lang.reflect.InvocationTargetException;
 import java.nio.file.Paths;
 import java.util.Arrays;
@@ -74,8 +75,13 @@ public @NotNull record GDriverFactory(@NotNull DriverInstance instance, long id,
         return Arrays.asList(Arrays.asList(new WebDriver[count])
                 .parallelStream()
                 .map(gdf -> new GDriverFactory(instance, new Random().nextLong(), autoClose))
-                .map(wd -> mappedObject(ExceptionUtils.unthrow(wd::createDriverInstance, 1000)))
+                .map(this::mappedDriverInstance)
                 .toArray(WebDriver[]::new));
+    }
+
+    @SneakyThrows
+    private WebDriver mappedDriverInstance(GDriverFactory factory) {
+        return mappedObject(factory.createDriverInstance());
     }
 
     @Override public WebDriver createDriverInstance() throws ClassNotFoundException, NoSuchMethodException,

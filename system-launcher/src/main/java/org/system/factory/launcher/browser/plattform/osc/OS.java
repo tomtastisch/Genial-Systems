@@ -1,6 +1,6 @@
-package javax.sys.launch.def.browser.plattform.osc;
+package org.system.factory.launcher.browser.plattform.osc;
 
-import javax.sys.launch.def.browser.plattform.Sniffer;
+import org.system.factory.launcher.browser.plattform.Sniffer;
 
 public enum OS {
     WIN(ProcessBuilderProperty.WINDOWS),

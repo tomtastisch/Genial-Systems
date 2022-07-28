@@ -31,6 +31,8 @@
         <commons.cli.version>1.5.0</commons.cli.version>
         <!-- https://mvnrepository.com/artifact/com.google.guava/guava -->
         <google.guava.version>31.0.1-jre</google.guava.version>
+        <!-- https://mvnrepository.com/artifact/org.projectlombok/lombok -->
+        <project.lombok>1.18.24</project.lombok>
     </properties>
 
     <dependencies>
@@ -69,6 +71,14 @@
             <groupId>com.google.guava</groupId>
             <artifactId>guava</artifactId>
             <version>${google.guava.version}</version>
+        </dependency>
+
+        <!-- https://mvnrepository.com/artifact/org.projectlombok/lombok -->
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <version>${project.lombok}</version>
+            <scope>provided</scope>
         </dependency>
     </dependencies>
 

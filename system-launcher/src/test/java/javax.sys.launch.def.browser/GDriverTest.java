@@ -3,7 +3,8 @@ package javax.sys.launch.def.browser;
 import org.junit.jupiter.api.Test;
 import org.openqa.selenium.WebDriver;
 
-import javax.sys.launch.def.browser.plattform.SystemExplorer;
+import org.system.factory.launcher.browser.GDriverFactory;
+import org.system.factory.launcher.browser.plattform.SystemExplorer;
 import java.util.List;
 import java.util.Objects;
 
